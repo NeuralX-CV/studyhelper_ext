@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyBuddy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0f14;
+      --bg2:       #13161e;
+      --bg3:       #1b1f2b;
+      --border:    #252934;
+      --accent:    #6ee7b7;        /* mint green */
+      --accent2:   #f59e0b;        /* amber */
+      --text:      #e8eaf0;
+      --muted:     #6b7280;
+      --danger:    #f87171;
+      --radius:    12px;
+      --font-head: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Layout ───────────────────────────────────── */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── Header ───────────────────────────────────── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+      flex-shrink: 0;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .logo-icon {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--accent), #34d399);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+    }
+    .logo-text {
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 17px;
+      letter-spacing: -0.3px;
+      color: var(--text);
+    }
+    .logo-text span { color: var(--accent); }
+    #settings-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); font-size: 18px; padding: 4px;
+      border-radius: 6px; transition: color .2s, background .2s;
+    }
+    #settings-btn:hover { color: var(--text); background: var(--bg3); }
+
+    /* ── Mode Tabs ────────────────────────────────── */
+    .mode-tabs {
+      display: flex;
+      padding: 10px 16px 0;
+      gap: 4px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .mode-tab {
+      flex: 1; padding: 8px 6px;
+      background: none; border: none; cursor: pointer;
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: 13px; font-weight: 500;
+      border-bottom: 2px solid transparent;
+      transition: all .2s;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+    }
+    .mode-tab:hover { color: var(--text); }
+    .mode-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ── Scrollable Content ───────────────────────── */
+    #content {
+      flex: 1; overflow-y: auto; padding: 16px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    #content::-webkit-scrollbar { width: 4px; }
+    #content::-webkit-scrollbar-track { background: transparent; }
+    #content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* ── Input Area ───────────────────────────────── */
+    .input-section { display: flex; flex-direction: column; gap: 8px; }
+    .input-label {
+      font-size: 11px; font-weight: 500; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .8px;
+    }
+    textarea, input[type="text"], input[type="password"] {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color .2s;
+      resize: none;
+    }
+    textarea:focus, input:focus {
+      border-color: var(--accent);
+    }
+    textarea { min-height: 80px; }
+
+    /* ── Buttons ──────────────────────────────────── */
+    .btn-primary {
+      width: 100%; padding: 11px;
+      background: var(--accent);
+      color: #0d0f14;
+      border: none; border-radius: var(--radius);
+      font-family: var(--font-head);
+      font-weight: 700; font-size: 14px;
+      cursor: pointer;
+      transition: opacity .2s, transform .1s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-primary:hover { opacity: .9; }
+    .btn-primary:active { transform: scale(.98); }
+    .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+
+    .btn-secondary {
+      padding: 7px 14px;
+      background: var(--bg3);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 12px; font-weight: 500;
+      cursor: pointer;
+      transition: background .2s, border-color .2s;
+    }
+    .btn-secondary:hover { background: var(--border); border-color: var(--muted); }
+
+    /* ── Loader ───────────────────────────────────── */
+    .loader {
+      display: none;
+      align-items: center; justify-content: center;
+      gap: 8px; padding: 20px;
+      color: var(--muted); font-size: 13px;
+    }
+    .loader.visible { display: flex; }
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Notes Output ─────────────────────────────── */
+    #notes-output {
+      display: none;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    #notes-output.visible { display: block; }
+    .output-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg3);
+    }
+    .output-title {
+      font-family: var(--font-head);
+      font-size: 12px; font-weight: 700;
+      color: var(--accent); text-transform: uppercase; letter-spacing: .8px;
+    }
+    .output-actions { display: flex; gap: 6px; }
+    #notes-body {
+      padding: 14px 16px;
+      font-size: 13.5px; line-height: 1.75;
+      color: var(--text);
+      max-height: 420px; overflow-y: auto;
+    }
+    #notes-body::-webkit-scrollbar { width: 3px; }
+    #notes-body::-webkit-scrollbar-thumb { background: var(--border); }
+
+    /* Markdown-style rendering */
+    #notes-body h1,#notes-body h2,#notes-body h3 {
+      font-family: var(--font-head); font-weight: 700;
+      color: var(--text); margin: 12px 0 6px;
+    }
+    #notes-body h1 { font-size: 17px; }
+    #notes-body h2 { font-size: 15px; color: var(--accent); }
+    #notes-body h3 { font-size: 13.5px; color: var(--accent2); }
+    #notes-body ul, #notes-body ol { padding-left: 18px; }
+    #notes-body li { margin-bottom: 4px; }
+    #notes-body strong { color: var(--accent2); font-weight: 600; }
+    #notes-body code {
+      background: var(--bg3); border-radius: 4px;
+      padding: 1px 5px; font-size: 12px; color: var(--accent);
+    }
+    #notes-body p { margin-bottom: 8px; }
+    #notes-body hr {
+      border: none; border-top: 1px solid var(--border); margin: 12px 0;
+    }
+
+    /* ── Flashcards ───────────────────────────────── */
+    #flashcard-area { display: none; flex-direction: column; gap: 12px; }
+    #flashcard-area.visible { display: flex; }
+
+    .fc-progress {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 12px; color: var(--muted);
+    }
+    .fc-progress-bar {
+      height: 3px; background: var(--border); border-radius: 2px;
+      overflow: hidden; margin-top: 4px;
+    }
+    .fc-progress-fill {
+      height: 100%; background: var(--accent);
+      border-radius: 2px; transition: width .4s ease;
+    }
+
+    .flashcard {
+      perspective: 1000px;
+      height: 200px; cursor: pointer;
+    }
+    .flashcard-inner {
+      position: relative; width: 100%; height: 100%;
+      transform-style: preserve-3d;
+      transition: transform .5s cubic-bezier(.4,0,.2,1);
+    }
+    .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+    .flashcard-front, .flashcard-back {
+      position: absolute; inset: 0;
+      backface-visibility: hidden;
+      border-radius: var(--radius);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 20px; text-align: center;
+    }
+    .flashcard-front {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+    }
+    .flashcard-back {
+      background: linear-gradient(135deg, #0f2027, #1a2a3a);
+      border: 1px solid var(--accent);
+      transform: rotateY(180deg);
+    }
+    .fc-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; margin-bottom: 10px;
+    }
+    .flashcard-front .fc-label { color: var(--muted); }
+    .flashcard-back .fc-label { color: var(--accent); }
+    .fc-text {
+      font-family: var(--font-body);
+      font-size: 14px; line-height: 1.6;
+    }
+    .flashcard-front .fc-text { color: var(--text); font-weight: 500; }
+    .flashcard-back .fc-text { color: var(--accent); }
+    .fc-hint {
+      font-size: 11px; color: var(--muted); margin-top: 10px;
+    }
+
+    .fc-controls {
+      display: flex; gap: 8px; align-items: center;
+    }
+    .fc-controls .btn-secondary { flex: 1; text-align: center; }
+    .fc-score {
+      display: flex; gap: 6px;
+    }
+    .btn-know {
+      flex: 1; padding: 9px;
+      background: rgba(110,231,183,.15);
+      color: var(--accent); border: 1px solid rgba(110,231,183,.3);
+      border-radius: 8px; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: background .2s;
+    }
+    .btn-know:hover { background: rgba(110,231,183,.25); }
+    .btn-dontknow {
+      flex: 1; padding: 9px;
+      background: rgba(248,113,113,.1);
+      color: var(--danger); border: 1px solid rgba(248,113,113,.25);
+      border-radius: 8px; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: background .2s;
+    }
+    .btn-dontknow:hover { background: rgba(248,113,113,.2); }
+
+    /* Score summary */
+    .fc-summary {
+      display: none;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px;
+      text-align: center; flex-direction: column; gap: 10px;
+    }
+    .fc-summary.visible { display: flex; }
+    .fc-summary-score {
+      font-family: var(--font-head); font-size: 40px; font-weight: 800;
+      color: var(--accent);
+    }
+    .fc-summary-label { color: var(--muted); font-size: 13px; }
+
+    /* ── Settings Panel ───────────────────────────── */
+    #settings-panel {
+      display: none;
+      flex-direction: column; gap: 14px;
+      padding: 16px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    #settings-panel.open { display: flex; }
+    .settings-title {
+      font-family: var(--font-head); font-size: 13px; font-weight: 700;
+      color: var(--muted); text-transform: uppercase; letter-spacing: .8px;
+    }
+    .settings-row { display: flex; flex-direction: column; gap: 5px; }
+    .settings-label { font-size: 12px; color: var(--muted); }
+    .settings-hint { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .settings-hint a { color: var(--accent); text-decoration: none; }
+    .settings-hint a:hover { text-decoration: underline; }
+    #save-settings-btn {
+      padding: 9px 18px;
+      background: var(--accent); color: #0d0f14;
+      border: none; border-radius: 8px;
+      font-family: var(--font-head); font-weight: 700; font-size: 13px;
+      cursor: pointer; align-self: flex-start;
+      transition: opacity .2s;
+    }
+    #save-settings-btn:hover { opacity: .85; }
+    .saved-badge {
+      font-size: 12px; color: var(--accent);
+      display: none; align-items: center; gap: 4px;
+    }
+    .saved-badge.show { display: flex; }
+
+    /* ── Error ────────────────────────────────────── */
+    .error-box {
+      background: rgba(248,113,113,.1);
+      border: 1px solid rgba(248,113,113,.3);
+      border-radius: var(--radius); padding: 12px 14px;
+      color: var(--danger); font-size: 13px;
+      display: none;
+    }
+    .error-box.visible { display: block; }
+
+    /* ── No key warning ───────────────────────────── */
+    .nokey-banner {
+      background: rgba(245,158,11,.08);
+      border: 1px solid rgba(245,158,11,.25);
+      border-radius: var(--radius); padding: 12px 14px;
+      color: var(--accent2); font-size: 12.5px; line-height: 1.6;
+      display: none;
+    }
+    .nokey-banner.visible { display: block; }
+    .nokey-banner a { color: var(--accent2); font-weight: 600; }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">📚</div>
+      <div class="logo-text">Study<span>Buddy</span></div>
+    </div>
+    <button id="settings-btn" title="Settings">⚙️</button>
+  </header>
+
+  <!-- Settings Panel (collapsible) -->
+  <div id="settings-panel">
+    <div class="settings-title">Settings</div>
+    <div class="settings-row">
+      <div class="settings-label">Groq API Key</div>
+      <input type="password" id="api-key-input" placeholder="gsk_..." />
+      <div class="settings-hint">
+        Free key at <a href="https://console.groq.com" target="_blank">console.groq.com</a>
+        → API Keys → Create Key
+      </div>
+    </div>
+    <div class="settings-row">
+      <div class="settings-label">Model</div>
+      <select id="model-select" style="
+        background:var(--bg3); border:1px solid var(--border);
+        border-radius:var(--radius); color:var(--text);
+        font-family:var(--font-body); font-size:13px;
+        padding:8px 10px; outline:none; width:100%; cursor:pointer;">
+        <option value="llama-3.3-70b-versatile">Llama 3.3 70B (best quality)</option>
+        <option value="llama-3.1-8b-instant">Llama 3.1 8B (fastest)</option>
+        <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+      </select>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <button id="save-settings-btn">Save</button>
+      <span class="saved-badge" id="saved-badge">✓ Saved</span>
+    </div>
+  </div>
+
+  <!-- Mode Tabs -->
+  <div class="mode-tabs">
+    <button class="mode-tab active" data-mode="notes">📝 Study Notes</button>
+    <button class="mode-tab" data-mode="flashcards">🃏 Flashcards</button>
+  </div>
+
+  <!-- Main Content -->
+  <div id="content">
+
+    <!-- No API key warning -->
+    <div class="nokey-banner" id="nokey-banner">
+      ⚠️ No API key set. Click ⚙️ above to add your free
+      <a href="https://console.groq.com" target="_blank">Groq API key</a>.
+    </div>
+
+    <!-- ── NOTES MODE ──────────────────────────── -->
+    <div id="notes-mode">
+      <div class="input-section">
+        <div class="input-label">Topic</div>
+        <textarea id="notes-topic" placeholder="e.g. Photosynthesis, The French Revolution, Newton's Laws of Motion…" rows="3"></textarea>
+      </div>
+
+      <div class="input-section">
+        <div class="input-label">Detail Level</div>
+        <select id="notes-depth" style="
+          background:var(--bg3); border:1px solid var(--border);
+          border-radius:var(--radius); color:var(--text);
+          font-family:var(--font-body); font-size:13px;
+          padding:8px 10px; outline:none; width:100%; cursor:pointer;">
+          <option value="brief">Brief overview</option>
+          <option value="standard" selected>Standard (recommended)</option>
+          <option value="detailed">Deep dive</option>
+        </select>
+      </div>
+
+      <button class="btn-primary" id="generate-notes-btn">
+        <span>✨</span> Generate Study Notes
+      </button>
+
+      <div class="loader" id="notes-loader">
+        <div class="spinner"></div>
+        <span>Generating notes…</span>
+      </div>
+
+      <div class="error-box" id="notes-error"></div>
+
+      <div id="notes-output">
+        <div class="output-header">
+          <span class="output-title">📝 Study Notes</span>
+          <div class="output-actions">
+            <button class="btn-secondary" id="copy-notes-btn">Copy</button>
+          </div>
+        </div>
+        <div id="notes-body"></div>
+      </div>
+    </div>
+
+    <!-- ── FLASHCARDS MODE ─────────────────────── -->
+    <div id="flashcards-mode" style="display:none; flex-direction:column; gap:12px;">
+
+      <div class="input-section">
+        <div class="input-label">Topic</div>
+        <textarea id="fc-topic" placeholder="e.g. Organic Chemistry reactions, World War II timeline…" rows="3"></textarea>
+      </div>
+
+      <div class="input-section">
+        <div class="input-label">Number of Cards</div>
+        <select id="fc-count" style="
+          background:var(--bg3); border:1px solid var(--border);
+          border-radius:var(--radius); color:var(--text);
+          font-family:var(--font-body); font-size:13px;
+          padding:8px 10px; outline:none; width:100%; cursor:pointer;">
+          <option value="5">5 cards</option>
+          <option value="10" selected>10 cards</option>
+          <option value="15">15 cards</option>
+          <option value="20">20 cards</option>
+        </select>
+      </div>
+
+      <button class="btn-primary" id="generate-fc-btn">
+        <span>🃏</span> Generate Flashcards
+      </button>
+
+      <div class="loader" id="fc-loader">
+        <div class="spinner"></div>
+        <span>Creating flashcards…</span>
+      </div>
+
+      <div class="error-box" id="fc-error"></div>
+
+      <!-- Flashcard quiz area -->
+      <div id="flashcard-area">
+        <div class="fc-progress">
+          <span id="fc-counter">Card 1 of 10</span>
+          <span id="fc-score-display">✅ 0 &nbsp; ❌ 0</span>
+        </div>
+        <div class="fc-progress-bar">
+          <div class="fc-progress-fill" id="fc-progress-fill" style="width:0%"></div>
+        </div>
+
+        <div class="flashcard" id="flashcard" title="Click to flip">
+          <div class="flashcard-inner">
+            <div class="flashcard-front">
+              <div class="fc-label">Question</div>
+              <div class="fc-text" id="fc-question"></div>
+              <div class="fc-hint">tap to reveal answer</div>
+            </div>
+            <div class="flashcard-back">
+              <div class="fc-label">Answer</div>
+              <div class="fc-text" id="fc-answer"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fc-controls">
+          <button class="btn-dontknow" id="fc-dontknow-btn">❌ Still learning</button>
+          <button class="btn-know" id="fc-know-btn">✅ Got it!</button>
+        </div>
+
+        <button class="btn-secondary" id="fc-restart-btn" style="width:100%;text-align:center;">
+          🔁 Restart deck
+        </button>
+      </div>
+
+      <!-- Summary -->
+      <div class="fc-summary" id="fc-summary">
+        <div class="fc-summary-score" id="fc-summary-score">0/0</div>
+        <div class="fc-summary-label">cards correct</div>
+        <div id="fc-summary-msg" style="font-size:13px; color:var(--text); margin-top:6px;"></div>
+        <button class="btn-primary" id="fc-retry-btn" style="margin-top:8px;">
+          🔁 Try Again
+        </button>
+      </div>
+
+    </div>
+    <!-- end flashcards mode -->
+
+  </div><!-- end #content -->
+</div><!-- end #app -->
+
+<script src="sidepanel.js"></script>
+</body>
+</html>
